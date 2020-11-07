@@ -20,3 +20,8 @@ app.get("/", (req, res) => {
 app.listen(APP_PORT, () => {
     console.log(`app listen on port ${APP_PORT}`);
 });
+
+const auth = require("./routes/auth");
+
+// attach member router
+app.use("/auth", auth);
