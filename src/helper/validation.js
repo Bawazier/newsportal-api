@@ -31,5 +31,10 @@ module.exports = {
         oldPassword: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
         newPassword: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
         repeatPassword: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+    }),
+
+    News: Joi.object({
+        title: Joi.string().min(3).max(80),
+        story: Joi.string()
     })
 };
