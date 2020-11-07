@@ -11,12 +11,13 @@ module.exports = {
     getUser: async (req, res) => {
         try{
             const data = await User.findAll({
+                attributes: ["name", "email", "email", "photo", "createdAt", "updatedAt"],
                 where: {
                     id: req.user.id
                 }
             });
             const respone = data.map(item => {
-                const picture = { URL_image: process.env.APP_URL + item.photo };
+                const picture = { URL_photo: process.env.APP_URL + item.photo };
                 return Object.assign({}, item.dataValues, picture);
             });
             return responeStandart(res, "success display user data", {respone});
