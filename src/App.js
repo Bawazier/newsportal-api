@@ -21,7 +21,16 @@ app.listen(APP_PORT, () => {
     console.log(`app listen on port ${APP_PORT}`);
 });
 
-const auth = require("./routes/auth");
 
-// attach member router
+//provide static file
+app.use("/assets/uploads/", express.static("assets/uploads"));
+
+const auth = require("./routes/auth");
+const private = require("./routes/private");
+
+// attach auth router
 app.use("/auth", auth);
+
+// attach private routes
+const userAuth = require("./middleware/auth");
+app.use("/private", userAuth, private);
