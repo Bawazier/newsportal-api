@@ -27,9 +27,13 @@ app.use("/assets/uploads/", express.static("assets/uploads"));
 
 const auth = require("./routes/auth");
 const private = require("./routes/private");
+const public = require("./routes/public");
 
-// attach auth router
+// attach auth routes
 app.use("/auth", auth);
+
+// attach public routes
+app.use("/public", public);
 
 // attach private routes
 const userAuth = require("./middleware/auth");

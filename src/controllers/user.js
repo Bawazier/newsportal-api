@@ -16,13 +16,21 @@ module.exports = {
                     id: req.user.id
                 }
             });
-            const respone = data.map(item => {
+            const results = data.map(item => {
                 const picture = { URL_photo: process.env.APP_URL + item.photo };
                 return Object.assign({}, item.dataValues, picture);
             });
-            return responeStandart(res, "success display user data", {respone});
+            return responeStandart(res, "success display user data", {
+                results,
+            });
         }catch(e){
-            return responeStandart(res, "cannot display user data", {}, 400, false);
+            return responeStandart(
+                res,
+                "cannot display user data",
+                { ValidationError: e.details[0].message, sqlError: e },
+                400,
+                false
+            );
         }
     },
 
@@ -52,7 +60,13 @@ module.exports = {
                 });
                 return responeStandart(res, "success update user data", {});
             } catch (e) {
-                return responeStandart(res, "cannot display user data", {}, 400, false);
+                return responeStandart(
+                    res,
+                    "cannot display user data",
+                    { ValidationError: e.details[0].message, sqlError: e },
+                    400,
+                    false
+                );
             }
         });
     },
@@ -83,7 +97,13 @@ module.exports = {
                 });
                 return responeStandart(res, "success update user data", {});
             } catch (e) {
-                return responeStandart(res, "cannot display user data", {}, 400, false);
+                return responeStandart(
+                    res,
+                    "cannot display user data",
+                    { ValidationError: e.details[0].message, sqlError: e },
+                    400,
+                    false
+                );
             }
         });
 

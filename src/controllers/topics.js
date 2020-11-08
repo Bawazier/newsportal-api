@@ -1,4 +1,5 @@
 const {Topics} = require("../models");
+const { Op } = require("sequelize");
 const responeStandart = require("../helper/respone");
 const schema = require("../helper/validation");
 
@@ -6,21 +7,52 @@ const topicsSchema = schema.Topics;
 
 module.exports = {
     getTopics: async (req, res) => {
-        try{
-            const find = await Topics.findAll();
-            if (find) {
-                return responeStandart(res, "success to display topics", {find});
+        try {
+            const { count, rows } = await Topics.findAndCountAll({
+                where: {
+                    title: {
+                        [Op.startsWith]: req.query.search,
+                    },
+                },
+                offset: parseInt(req.query.page) || 0,
+                limit: parseInt(req.query.limit) || 10,
+            });
+            if (rows.length) {
+                return responeStandart(res, "success to display topics", {
+                    results: rows,
+                    pageInfo: [
+                        {
+                            count: count,
+                            page: parseInt(req.query.page) || 0,
+                            limit: parseInt(req.query.limit) || 10,
+                        },
+                    ],
+                });
             } else {
                 return responeStandart(
                     res,
                     "unable to display topics",
-                    {},
+                    {
+                        pageInfo: [
+                            {
+                                count: count,
+                                page: parseInt(req.query.page) || 0,
+                                limit: parseInt(req.query.limit) || 10,
+                            },
+                        ],
+                    },
                     400,
                     false
                 );
             }
-        }catch(e){
-            return responeStandart(res, "unable to display topics", {}, 400, false);
+        } catch (e) {
+            return responeStandart(
+                res,
+                "unable to display topics",
+                { ValidationError: e.details[0].message, sqlError: e },
+                400,
+                false
+            );
         }
     },
 
@@ -37,7 +69,7 @@ module.exports = {
             return responeStandart(
                 res,
                 "unable to post topics",
-                { ValidationError: e.details[0].message },
+                { ValidationError: e.details[0].message, sqlError: e },
                 400,
                 false
             );
@@ -62,7 +94,13 @@ module.exports = {
                 return responeStandart(res, "unable to update topics", 400, false);
             }
         } catch (e) {
-            return responeStandart(res, "unable to update topics", {}, 400, false);
+            return responeStandart(
+                res,
+                "unable to update topics",
+                { ValidationError: e.details[0].message, sqlError: e },
+                400,
+                false
+            );
         }
     },
 
@@ -84,7 +122,13 @@ module.exports = {
                 return responeStandart(res, "unable to update topics", {}, 400, false);
             }
         } catch (e) {
-            return responeStandart(res, "unable to update topics", {}, 400, false);
+            return responeStandart(
+                res,
+                "unable to update topics",
+                { ValidationError: e.details[0].message, sqlError: e },
+                400,
+                false
+            );
         }
     },
 
@@ -110,7 +154,7 @@ module.exports = {
             return responeStandart(
                 res,
                 "unable to remove topics",
-                {},
+                { ValidationError: e.details[0].message, sqlError: e },
                 400,
                 false
             );
