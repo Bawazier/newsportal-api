@@ -1,4 +1,4 @@
-const { News, Topics } = require("../models");
+const { News, Topics, Favorite } = require("../models");
 const { Op } = require("sequelize");
 const multer = require("multer");
 const responeStandart = require("../helper/respone");
@@ -32,8 +32,14 @@ module.exports = {
                             id: item.topics_id,
                         },
                     });
+                    const favorite = Favorite.count({
+                        where: {
+                            news_id: item.id,
+                        },
+                    });
                     return Object.assign({}, item.dataValues, picture, {
                         topics: topics.title,
+                        favorite: favorite
                     });
                 });
                 return responeStandart(res, "success to display stories", {
@@ -85,6 +91,7 @@ module.exports = {
                 const result = await newsSchema.required().validateAsync(req.body);
                 const news = {
                     user_id: req.user.id,
+                    topics_id: result.topics_id,
                     title: result.title,
                     story: result.story,
                     thumbnail: req.file === undefined ? undefined : req.file.path,
@@ -117,6 +124,7 @@ module.exports = {
             try {
                 const result = await newsSchema.validateAsync(req.body);
                 const news = {
+                    topics_id: result.topics_id,
                     title: result.title,
                     story: result.story,
                     thumbnail: req.file === undefined ? undefined : req.file.path,
@@ -154,6 +162,7 @@ module.exports = {
             try {
                 const result = await newsSchema.required().validateAsync(req.body);
                 const news = {
+                    topics_id: result.topics_id,
                     title: result.title,
                     story: result.story,
                     thumbnail: req.file === undefined ? undefined : req.file.path,

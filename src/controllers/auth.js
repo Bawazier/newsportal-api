@@ -57,8 +57,7 @@ module.exports = {
                     email: user.email
                 }
             });
-
-            if(!validate){
+            if(!validate.length){
                 await User.create(user);
                 return responeStandart(res, "Signup Success", {});
             }else{

@@ -34,6 +34,7 @@ module.exports = {
     }),
 
     News: Joi.object({
+        topics_id: Joi.number().integer().positive(),
         title: Joi.string().min(3).max(80),
         story: Joi.string(),
     }),

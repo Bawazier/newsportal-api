@@ -11,7 +11,7 @@ module.exports = {
     getUser: async (req, res) => {
         try{
             const data = await User.findAll({
-                attributes: ["name", "email", "email", "photo", "createdAt", "updatedAt"],
+                attributes: ["name", "email", "bio", "photo", "createdAt", "updatedAt"],
                 where: {
                     id: req.user.id
                 }

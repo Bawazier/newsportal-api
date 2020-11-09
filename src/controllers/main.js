@@ -1,4 +1,4 @@
-const {News, Topics, Favorite} = require("../models");
+const {News, Topics} = require("../models");
 const { Op } = require("sequelize");
 const responeStandart = require("../helper/respone");
 
@@ -134,6 +134,7 @@ module.exports = {
     searchTrends: async (req, res) => {
         try {
             const { count, rows } = await News.findAndCountAll({
+                order: [["createdAt", "DESC"]],
                 offset: parseInt(req.query.page) || 0,
                 limit: parseInt(req.query.limit) || 10,
             });
@@ -142,14 +143,14 @@ module.exports = {
                     const picture = {
                         URL_thumbnail: process.env.APP_URL + item.thumbnail,
                     };
-                    const favorite = Favorite.count({
-                        where: {
-                            news_id: item.id,
-                        },
-                    });
-                    return Object.assign({}, item.dataValues, picture, {
-                        favorite,
-                    });
+                    
+                    if(count){
+                        return Object.assign(
+                            {},
+                            item.dataValues,
+                            picture
+                        );
+                    }
                 });
                 return responeStandart(res, "success to display stories", {
                     results,
