@@ -1,19 +1,21 @@
-const {News, Topics} = require("../models");
-const { Op } = require("sequelize");
+const { News, Topics, User, Favorite } = require("../models");
+const { Sequelize, Op } = require("sequelize");
 const responeStandart = require("../helper/respone");
 
 module.exports = {
     searchNews: async (req, res) => {
         try {
             const { count, rows } = await News.findAndCountAll({
+                include: [
+                    { model: Topics, attributes: ["title"] },
+                    { model: User, attributes: ["name", "photo"] },
+                ],
                 where: {
                     title: {
                         [Op.startsWith]: req.query.search,
                     },
                 },
-                order: [
-                    ["createdAt", "DESC"]
-                ],
+                order: [["createdAt", "DESC"]],
                 offset: parseInt(req.query.page) || 0,
                 limit: parseInt(req.query.limit) || 10,
             });
@@ -72,6 +74,10 @@ module.exports = {
     findNewsByTopics: async (req, res) => {
         try {
             const { count, rows } = await News.findAndCountAll({
+                include: [
+                    { model: Topics, attributes: ["title"] },
+                    { model: User, attributes: ["name", "photo"] },
+                ],
                 where: {
                     topics_id: req.params.id,
                 },
@@ -134,6 +140,21 @@ module.exports = {
     searchTrends: async (req, res) => {
         try {
             const { count, rows } = await News.findAndCountAll({
+                include: [
+                    { model: Topics, attributes: ["title"] },
+                    { model: User, attributes: ["name", "photo"] },
+                    {
+                        model: Favorite,
+                        attributes: {
+                            include: [
+                                [
+                                    Sequelize.fn("COUNT", Sequelize.col("Favorites.id")),
+                                    "stars",
+                                ],
+                            ],
+                        },
+                    },
+                ],
                 order: [["createdAt", "DESC"]],
                 offset: parseInt(req.query.page) || 0,
                 limit: parseInt(req.query.limit) || 10,

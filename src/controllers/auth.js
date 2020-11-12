@@ -24,13 +24,21 @@ module.exports = {
             });
             const comparePass = await bcrypt.compareSync(result.password, validate[0].password);
             if (validate && comparePass) {
-                jwt.sign({ id: validate[0].id }, process.env.APP_KEY, function (err, token) {
-                    if (!err) {
-                        return responeStandart(res, "Loggin Success", { token: token, auth: { id: validate[0].id } });
-                    } else {
-                        return responeStandart(res, err, {}, 403, false);
+                jwt.sign(
+                    { id: validate[0].id },
+                    process.env.APP_KEY,
+                    { expiresIn: "2 days" },
+                    function (err, token) {
+                        if (!err) {
+                            return responeStandart(res, "Loggin Success", {
+                                token: token,
+                                auth: { id: validate[0].id },
+                            });
+                        } else {
+                            return responeStandart(res, err, {}, 403, false);
+                        }
                     }
-                });
+                );
             } else {
                 return responeStandart(res, "Wrong Password", {}, 400, false);
             }

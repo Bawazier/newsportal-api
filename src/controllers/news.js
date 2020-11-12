@@ -1,4 +1,4 @@
-const { News, Topics, Favorite } = require("../models");
+const { News, Topics, Favorite, User } = require("../models");
 const { Op } = require("sequelize");
 const multer = require("multer");
 const responeStandart = require("../helper/respone");
@@ -12,6 +12,10 @@ module.exports = {
     getNews: async (req, res) => {
         try {
             const { count, rows } = await News.findAndCountAll({
+                include: [
+                    { model: Topics, attributes: ["title"] },
+                    { model: User, attributes: ["name", "photo"] },
+                ],
                 where: {
                     user_id: req.user.id,
                     title: {
