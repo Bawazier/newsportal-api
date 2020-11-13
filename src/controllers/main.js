@@ -3,6 +3,47 @@ const { Sequelize, Op } = require("sequelize");
 const responeStandart = require("../helper/respone");
 
 module.exports = {
+    detailsNews: async (req, res) => {
+        try {
+            const result = await News.findAll({
+                include: [
+                    { model: Topics, attributes: ["title"] },
+                    { model: User, attributes: ["name", "photo"] },
+                ],
+                where: {
+                    id: req.params.id
+                },
+            });
+            if (result.length) {
+                const results = result.map((item) => {
+                    const picture = {
+                        URL_thumbnail: process.env.APP_URL + item.thumbnail,
+                    };
+                    return Object.assign({}, item.dataValues, picture);
+                });
+                return responeStandart(res, "success to display stories", {
+                    results,
+                });
+            } else {
+                return responeStandart(
+                    res,
+                    "unable to display stories",
+                    {},
+                    400,
+                    false
+                );
+            }
+        } catch (e) {
+            return responeStandart(
+                res,
+                "unable to display stories",
+                { ValidationError: e.details[0].message, sqlError: e },
+                400,
+                false
+            );
+        }
+    },
+
     searchNews: async (req, res) => {
         try {
             const { count, rows } = await News.findAndCountAll({
@@ -24,14 +65,7 @@ module.exports = {
                     const picture = {
                         URL_thumbnail: process.env.APP_URL + item.thumbnail,
                     };
-                    const topics = Topics.findAll({
-                        where: {
-                            id: item.topics_id,
-                        },
-                    });
-                    return Object.assign({}, item.dataValues, picture, {
-                        topics: topics.title,
-                    });
+                    return Object.assign({}, item.dataValues, picture);
                 });
                 return responeStandart(res, "success to display stories", {
                     results,
@@ -90,14 +124,7 @@ module.exports = {
                     const picture = {
                         URL_thumbnail: process.env.APP_URL + item.thumbnail,
                     };
-                    const topics = Topics.findAll({
-                        where: {
-                            id: item.topics_id,
-                        },
-                    });
-                    return Object.assign({}, item.dataValues, picture, {
-                        topics: topics.title,
-                    });
+                    return Object.assign({}, item.dataValues, picture);
                 });
                 return responeStandart(res, "success to display stories", {
                     results,
