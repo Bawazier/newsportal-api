@@ -1,5 +1,5 @@
 const { News, Topics, User, Favorite } = require("../models");
-const { Sequelize, Op } = require("sequelize");
+const { Op } = require("sequelize");
 const responeStandart = require("../helper/respone");
 const pagination = require("../helper/pagination");
 
@@ -152,32 +152,15 @@ module.exports = {
             const {
                 page = 1,
                 limit = 10,
-                search = "",
-                sortBy = "createdAt",
+                sortBy = "news_id",
                 sortType = "DESC",
             } = req.query;
             const offset = (page - 1) * limit;
-            const { count, rows } = await News.findAndCountAll({
+            const { count, rows } = await Favorite.findAndCountAll({
                 include: [
-                    { model: Topics, attributes: ["title"] },
                     { model: User, attributes: ["name", "photo"] },
-                    {
-                        model: Favorite,
-                        attributes: {
-                            include: [
-                                [
-                                    Sequelize.fn("COUNT", Sequelize.col("Favorites.id")),
-                                    "stars",
-                                ],
-                            ],
-                        },
-                    },
+                    News,
                 ],
-                where: {
-                    title: {
-                        [Op.startsWith]: search,
-                    },
-                },
                 order: [[sortBy, sortType]],
                 offset: parseInt(offset),
                 limit: parseInt(limit),
@@ -190,21 +173,8 @@ module.exports = {
                 limit
             );
             if (rows.length) {
-                const results = rows.map((item) => {
-                    const picture = {
-                        URL_thumbnail: process.env.APP_URL + item.thumbnail,
-                    };
-                    
-                    if(count){
-                        return Object.assign(
-                            {},
-                            item.dataValues,
-                            picture
-                        );
-                    }
-                });
                 return responeStandart(res, "success to display stories", {
-                    results,
+                    results: rows,
                     pageInfo,
                 });
             } else {
