@@ -6,22 +6,13 @@ const pagination = require("../helper/pagination");
 module.exports = {
     detailsNews: async (req, res) => {
         try {
-            const result = await News.findAll({
+            const results = await News.findByPk(req.params.id, {
                 include: [
                     { model: Topics, attributes: ["title"] },
                     { model: User, attributes: ["name", "photo"] },
                 ],
-                where: {
-                    id: req.params.id
-                },
             });
-            if (result.length) {
-                const results = result.map((item) => {
-                    const picture = {
-                        URL_thumbnail: process.env.APP_URL + item.thumbnail,
-                    };
-                    return Object.assign({}, item.dataValues, picture);
-                });
+            if (results.length) {
                 return responeStandart(res, "success to display stories", {
                     results,
                 });

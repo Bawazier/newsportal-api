@@ -10,15 +10,15 @@ const userSchema = schema.User;
 module.exports = {
     getUser: async (req, res) => {
         try{
-            const data = await User.findAll({
-                attributes: ["name", "email", "bio", "photo", "createdAt", "updatedAt"],
-                where: {
-                    id: req.user.id
-                }
-            });
-            const results = data.map(item => {
-                const picture = { URL_photo: process.env.APP_URL + item.photo };
-                return Object.assign({}, item.dataValues, picture);
+            const results = await User.findByPk(req.user.id, {
+                attributes: [
+                    "name",
+                    "email",
+                    "bio",
+                    "photo",
+                    "createdAt",
+                    "updatedAt",
+                ],
             });
             return responeStandart(res, "success display user data", {
                 results,
