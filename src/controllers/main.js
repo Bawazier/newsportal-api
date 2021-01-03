@@ -158,12 +158,12 @@ module.exports = {
             const offset = (page - 1) * limit;
             const { count, rows } = await Favorite.findAndCountAll({
                 include: [
-                    { model: User, attributes: ["name", "photo"] },
                     News,
                 ],
                 order: [[sortBy, sortType]],
                 offset: parseInt(offset),
                 limit: parseInt(limit),
+                group: "news_id",
             });
             const pageInfo = pagination.paging(
                 "search/trends",
