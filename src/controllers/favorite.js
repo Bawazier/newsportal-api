@@ -74,13 +74,7 @@ module.exports = {
                 );
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to display favorite stories",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -114,13 +108,7 @@ module.exports = {
             }
             
         }catch(e){
-            return responeStandart(
-                res,
-                "the story failed to save",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -138,13 +126,7 @@ module.exports = {
                 return responeStandart(res, "the favorite story failed to remove", {}, 400, false);
             }
         }catch(e){
-            return responeStandart(
-                res,
-                "the favorite story failed to remove",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     }
 };

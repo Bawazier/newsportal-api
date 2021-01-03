@@ -24,13 +24,7 @@ module.exports = {
                 results,
             });
         }catch(e){
-            return responeStandart(
-                res,
-                "cannot display user data",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -60,13 +54,7 @@ module.exports = {
                 });
                 return responeStandart(res, "success update user data", {});
             } catch (e) {
-                return responeStandart(
-                    res,
-                    "cannot display user data",
-                    { ValidationError: e.details[0].message, sqlError: e },
-                    400,
-                    false
-                );
+                return responeStandart(res, e, {}, 400, false);
             }
         });
     },
@@ -97,13 +85,7 @@ module.exports = {
                 });
                 return responeStandart(res, "success update user data", {});
             } catch (e) {
-                return responeStandart(
-                    res,
-                    "cannot display user data",
-                    { ValidationError: e.details[0].message, sqlError: e },
-                    400,
-                    false
-                );
+                return responeStandart(res, e, {}, 400, false);
             }
         });
 

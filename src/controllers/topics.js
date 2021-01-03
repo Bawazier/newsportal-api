@@ -48,13 +48,7 @@ module.exports = {
                 );
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to display topics",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -68,13 +62,7 @@ module.exports = {
             await Topics.create(topics);
             return responeStandart(res, "success to post topics", {});
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to post topics",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -96,13 +84,7 @@ module.exports = {
                 return responeStandart(res, "unable to update topics", 400, false);
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to update topics",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -124,13 +106,7 @@ module.exports = {
                 return responeStandart(res, "unable to update topics", {}, 400, false);
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to update topics",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -153,13 +129,7 @@ module.exports = {
                 );
             }
         }catch(e){
-            return responeStandart(
-                res,
-                "unable to remove topics",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     }
 };

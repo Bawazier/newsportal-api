@@ -35,13 +35,7 @@ module.exports = {
                 );
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to display stories",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -99,13 +93,7 @@ module.exports = {
                 );
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to display stories",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -164,13 +152,7 @@ module.exports = {
                 );
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to display stories",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -246,13 +228,7 @@ module.exports = {
                 );
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to display stories",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -297,13 +273,7 @@ module.exports = {
                 );
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to display topics",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 };

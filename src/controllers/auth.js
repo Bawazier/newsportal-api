@@ -44,7 +44,7 @@ module.exports = {
             }
 
         }catch(e){
-            return responeStandart(res, e.details[0].message, {}, 400, false);
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -73,7 +73,7 @@ module.exports = {
             }
             
         } catch (e) {
-            return responeStandart(res, e.details[0].message, {}, 400, false);
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -108,7 +108,7 @@ module.exports = {
                 return responeStandart(res, "Passwords are not the same", {}, 400, false);
             }
         }catch(e){
-            return responeStandart(res, e.details[0].message, {}, 400, false);
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -142,7 +142,7 @@ module.exports = {
                 return responeStandart(res, "Passwords are not the same", {}, 400, false);
             }
         } catch (e) {
-            return responeStandart(res, e.details[0].message, {}, 400, false);
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 };

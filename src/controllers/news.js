@@ -72,13 +72,7 @@ module.exports = {
                 );
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "unable to display stories",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 
@@ -105,13 +99,7 @@ module.exports = {
                 await News.create(filteredObject);
                 return responeStandart(res, "success create your story", {});
             } catch (e) {
-                return responeStandart(
-                    res,
-                    "failed for create story",
-                    { ValidationError: e.details[0].message, sqlError: e },
-                    400,
-                    false
-                );
+                return responeStandart(res, e, {}, 400, false);
             }
         });
     },
@@ -143,13 +131,7 @@ module.exports = {
                 });
                 return responeStandart(res, "success update your story", {});
             } catch (e) {
-                return responeStandart(
-                    res,
-                    "failed for update story",
-                    { ValidationError: e.details[0].message, sqlError: e },
-                    400,
-                    false
-                );
+                return responeStandart(res, e, {}, 400, false);
             }
         });
     },
@@ -181,13 +163,7 @@ module.exports = {
                 });
                 return responeStandart(res, "success update your story", {});
             } catch (e) {
-                return responeStandart(
-                    res,
-                    "failed for update story",
-                    { ValidationError: e.details[0].message, sqlError: e },
-                    400,
-                    false
-                );
+                return responeStandart(res, e, {}, 400, false);
             }
         });
     },
@@ -206,13 +182,7 @@ module.exports = {
                 return responeStandart(res, "story not found", {}, 404, false);
             }
         } catch (e) {
-            return responeStandart(
-                res,
-                "failed for delete story",
-                { ValidationError: e.details[0].message, sqlError: e },
-                400,
-                false
-            );
+            return responeStandart(res, e, {}, 400, false);
         }
     },
 };
