@@ -12,7 +12,7 @@ module.exports = {
                     { model: User, attributes: ["name", "photo"] },
                 ],
             });
-            if (results.length) {
+            if (results !== null) {
                 return responeStandart(res, "success to display stories", {
                     results,
                 });
