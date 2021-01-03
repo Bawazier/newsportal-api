@@ -4,6 +4,7 @@ const multer = require("multer");
 const responeStandart = require("../helper/respone");
 const schema = require("../helper/validation");
 const options = require("../helper/upload");
+const pagination = require("../helper/pagination");
 
 const upload = options.single("thumbnail");
 const newsSchema = schema.News;
@@ -11,6 +12,14 @@ const newsSchema = schema.News;
 module.exports = {
     getNews: async (req, res) => {
         try {
+            const {
+                page = 1,
+                limit = 10,
+                search = "",
+                sortBy = "createdAt",
+                sortType = "DESC",
+            } = req.query;
+            const offset = (page - 1) * limit;
             const { count, rows } = await News.findAndCountAll({
                 include: [
                     { model: Topics, attributes: ["title"] },
@@ -19,13 +28,14 @@ module.exports = {
                 where: {
                     user_id: req.user.id,
                     title: {
-                        [Op.startsWith]: req.query.search,
+                        [Op.startsWith]: search,
                     },
                 },
-                order: [["createdAt", "DESC"]],
-                offset: parseInt(req.query.page) || 0,
-                limit: parseInt(req.query.limit) || 10,
+                order: [[sortBy, sortType]],
+                offset: parseInt(offset),
+                limit: parseInt(limit),
             });
+            const pageInfo = pagination.paging("news/", req, count, page, limit);
             if (rows.length) {
                 const results = rows.map((item) => {
                     const picture = {
@@ -48,26 +58,14 @@ module.exports = {
                 });
                 return responeStandart(res, "success to display stories", {
                     results,
-                    pageInfo: [
-                        {
-                            count: count,
-                            page: parseInt(req.query.page) || 0,
-                            limit: parseInt(req.query.limit) || 10,
-                        },
-                    ],
+                    pageInfo,
                 });
             } else {
                 return responeStandart(
                     res,
                     "unable to display stories",
                     {
-                        pageInfo: [
-                            {
-                                count: count,
-                                page: parseInt(req.query.page) || 0,
-                                limit: parseInt(req.query.limit) || 10,
-                            },
-                        ],
+                        pageInfo,
                     },
                     400,
                     false

@@ -1,10 +1,19 @@
 const { News, Favorite, Topics } = require("../models");
 const { Op } = require("sequelize");
 const responeStandart = require("../helper/respone");
+const pagination = require("../helper/pagination");
 
 module.exports = {
     getFavorite: async (req, res) => {
         try {
+            const {
+                page = 1,
+                limit = 10,
+                search = "",
+                sortBy = "createdAt",
+                sortType = "DESC",
+            } = req.query;
+            const offset = (page - 1) * limit;
             const find = await Favorite.findAll({
                 where: {
                     user_id: req.user.id,
@@ -17,13 +26,20 @@ module.exports = {
                         return item.news_id;
                     }),
                     title: {
-                        [Op.startsWith]: req.query.search,
+                        [Op.startsWith]: search,
                     },
                 },
-                order: [["createdAt", "DESC"]],
-                offset: parseInt(req.query.page) || 0,
-                limit: parseInt(req.query.limit) || 10,
+                order: [[sortBy, sortType]],
+                offset: parseInt(offset) || 0,
+                limit: parseInt(limit) || 10,
             });
+            const pageInfo = pagination.paging(
+                "favorite/",
+                req,
+                count,
+                page,
+                limit
+            );
             if (rows.length) {
                 const results = rows.map((item) => {
                     const picture = {
@@ -38,28 +54,20 @@ module.exports = {
                         topics: topics.title,
                     });
                 });
-                return responeStandart(res, "success to display favorite stories", {
-                    results,
-                    pageInfo: [
-                        {
-                            count: count,
-                            page: parseInt(req.query.page) || 0,
-                            limit: parseInt(req.query.limit) || 10,
-                        },
-                    ],
-                });
+                return responeStandart(
+                    res,
+                    "success to display favorite stories",
+                    {
+                        results,
+                        pageInfo,
+                    }
+                );
             } else {
                 return responeStandart(
                     res,
                     "unable to display favorite stories",
                     {
-                        pageInfo: [
-                            {
-                                count: count,
-                                page: parseInt(req.query.page) || 0,
-                                limit: parseInt(req.query.limit) || 10,
-                            },
-                        ],
+                        pageInfo,
                     },
                     400,
                     false

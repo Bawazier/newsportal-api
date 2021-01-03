@@ -1,6 +1,7 @@
 const { News, Topics, User, Favorite } = require("../models");
 const { Sequelize, Op } = require("sequelize");
 const responeStandart = require("../helper/respone");
+const pagination = require("../helper/pagination");
 
 module.exports = {
     detailsNews: async (req, res) => {
@@ -46,6 +47,14 @@ module.exports = {
 
     searchNews: async (req, res) => {
         try {
+            const {
+                page = 1,
+                limit = 10,
+                search = "",
+                sortBy = "createdAt",
+                sortType = "DESC",
+            } = req.query;
+            const offset = (page - 1) * limit;
             const { count, rows } = await News.findAndCountAll({
                 include: [
                     { model: Topics, attributes: ["title"] },
@@ -53,13 +62,20 @@ module.exports = {
                 ],
                 where: {
                     title: {
-                        [Op.startsWith]: req.query.search,
+                        [Op.startsWith]: search,
                     },
                 },
-                order: [["createdAt", "DESC"]],
-                offset: parseInt(req.query.page) || 0,
-                limit: parseInt(req.query.limit) || 10,
+                order: [[sortBy, sortType]],
+                offset: parseInt(offset),
+                limit: parseInt(limit),
             });
+            const pageInfo = pagination.paging(
+                "search/news",
+                req,
+                count,
+                page,
+                limit
+            );
             if (rows.length) {
                 const results = rows.map((item) => {
                     const picture = {
@@ -69,26 +85,14 @@ module.exports = {
                 });
                 return responeStandart(res, "success to display stories", {
                     results,
-                    pageInfo: [
-                        {
-                            count: count,
-                            page: parseInt(req.query.page) || 0,
-                            limit: parseInt(req.query.limit) || 10,
-                        },
-                    ],
+                    pageInfo,
                 });
             } else {
                 return responeStandart(
                     res,
                     "unable to display stories",
                     {
-                        pageInfo: [
-                            {
-                                count: count,
-                                page: parseInt(req.query.page) || 0,
-                                limit: parseInt(req.query.limit) || 10,
-                            },
-                        ],
+                        pageInfo,
                     },
                     400,
                     false
@@ -107,6 +111,14 @@ module.exports = {
 
     findNewsByTopics: async (req, res) => {
         try {
+            const {
+                page = 1,
+                limit = 10,
+                search = "",
+                sortBy = "createdAt",
+                sortType = "DESC",
+            } = req.query;
+            const offset = (page - 1) * limit;
             const { count, rows } = await News.findAndCountAll({
                 include: [
                     { model: Topics, attributes: ["title"] },
@@ -114,11 +126,21 @@ module.exports = {
                 ],
                 where: {
                     topics_id: req.params.id,
+                    title: {
+                        [Op.startsWith]: search,
+                    },
                 },
-                order: [["createdAt", "DESC"]],
-                offset: parseInt(req.query.page) || 0,
-                limit: parseInt(req.query.limit) || 10,
+                order: [[sortBy, sortType]],
+                offset: parseInt(offset),
+                limit: parseInt(limit),
             });
+            const pageInfo = pagination.paging(
+                `/news/topics/${req.params.id}`,
+                req,
+                count,
+                page,
+                limit
+            );
             if (rows.length) {
                 const results = rows.map((item) => {
                     const picture = {
@@ -128,26 +150,14 @@ module.exports = {
                 });
                 return responeStandart(res, "success to display stories", {
                     results,
-                    pageInfo: [
-                        {
-                            count: count,
-                            page: parseInt(req.query.page) || 0,
-                            limit: parseInt(req.query.limit) || 10,
-                        },
-                    ],
+                    pageInfo,
                 });
             } else {
                 return responeStandart(
                     res,
                     "unable to display stories",
                     {
-                        pageInfo: [
-                            {
-                                count: count,
-                                page: parseInt(req.query.page) || 0,
-                                limit: parseInt(req.query.limit) || 10,
-                            },
-                        ],
+                        pageInfo,
                     },
                     400,
                     false
@@ -166,6 +176,14 @@ module.exports = {
 
     searchTrends: async (req, res) => {
         try {
+            const {
+                page = 1,
+                limit = 10,
+                search = "",
+                sortBy = "createdAt",
+                sortType = "DESC",
+            } = req.query;
+            const offset = (page - 1) * limit;
             const { count, rows } = await News.findAndCountAll({
                 include: [
                     { model: Topics, attributes: ["title"] },
@@ -182,10 +200,22 @@ module.exports = {
                         },
                     },
                 ],
-                order: [["createdAt", "DESC"]],
-                offset: parseInt(req.query.page) || 0,
-                limit: parseInt(req.query.limit) || 10,
+                where: {
+                    title: {
+                        [Op.startsWith]: search,
+                    },
+                },
+                order: [[sortBy, sortType]],
+                offset: parseInt(offset),
+                limit: parseInt(limit),
             });
+            const pageInfo = pagination.paging(
+                "search/trends",
+                req,
+                count,
+                page,
+                limit
+            );
             if (rows.length) {
                 const results = rows.map((item) => {
                     const picture = {
@@ -202,26 +232,14 @@ module.exports = {
                 });
                 return responeStandart(res, "success to display stories", {
                     results,
-                    pageInfo: [
-                        {
-                            count: count,
-                            page: parseInt(req.query.page) || 0,
-                            limit: parseInt(req.query.limit) || 10,
-                        },
-                    ],
+                    pageInfo,
                 });
             } else {
                 return responeStandart(
                     res,
                     "unable to display stories",
                     {
-                        pageInfo: [
-                            {
-                                count: count,
-                                page: parseInt(req.query.page) || 0,
-                                limit: parseInt(req.query.limit) || 10,
-                            },
-                        ],
+                        pageInfo,
                     },
                     400,
                     false
@@ -240,38 +258,39 @@ module.exports = {
 
     findTopics: async (req, res) => {
         try {
+            const {
+                page = 1,
+                limit = 10,
+                search = "",
+            } = req.query;
+            const offset = (page - 1) * limit;
             const { count, rows } = await Topics.findAndCountAll({
                 where: {
                     title: {
-                        [Op.startsWith]: req.query.search,
+                        [Op.startsWith]: search,
                     },
                 },
-                offset: parseInt(req.query.page) || 0,
-                limit: parseInt(req.query.limit) || 10,
+                offset: parseInt(offset),
+                limit: parseInt(limit),
             });
+            const pageInfo = pagination.paging(
+                "topics/",
+                req,
+                count,
+                page,
+                limit
+            );
             if (rows.length) {
                 return responeStandart(res, "success to display topics", {
                     results: rows,
-                    pageInfo: [
-                        {
-                            count: count,
-                            page: parseInt(req.query.page) || 0,
-                            limit: parseInt(req.query.limit) || 10,
-                        },
-                    ],
+                    pageInfo,
                 });
             } else {
                 return responeStandart(
                     res,
                     "unable to display topics",
                     {
-                        pageInfo: [
-                            {
-                                count: count,
-                                page: parseInt(req.query.page) || 0,
-                                limit: parseInt(req.query.limit) || 10,
-                            },
-                        ],
+                        pageInfo,
                     },
                     400,
                     false

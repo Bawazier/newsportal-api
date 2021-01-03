@@ -2,44 +2,46 @@ const {Topics} = require("../models");
 const { Op } = require("sequelize");
 const responeStandart = require("../helper/respone");
 const schema = require("../helper/validation");
+const pagination = require("../helper/pagination");
 
 const topicsSchema = schema.Topics;
 
 module.exports = {
     getTopics: async (req, res) => {
         try {
+            const {
+                page = 1,
+                limit = 10,
+                search = "",
+            } = req.query;
+            const offset = (page - 1) * limit;
             const { count, rows } = await Topics.findAndCountAll({
                 where: {
                     title: {
-                        [Op.startsWith]: req.query.search,
+                        [Op.startsWith]: search,
                     },
                 },
-                offset: parseInt(req.query.page) || 0,
-                limit: parseInt(req.query.limit) || 10,
+                offset: parseInt(offset),
+                limit: parseInt(limit),
             });
+            const pageInfo = pagination.paging(
+                "topics/",
+                req,
+                count,
+                page,
+                limit
+            );
             if (rows.length) {
                 return responeStandart(res, "success to display topics", {
                     results: rows,
-                    pageInfo: [
-                        {
-                            count: count,
-                            page: parseInt(req.query.page) || 0,
-                            limit: parseInt(req.query.limit) || 10,
-                        },
-                    ],
+                    pageInfo,
                 });
             } else {
                 return responeStandart(
                     res,
                     "unable to display topics",
                     {
-                        pageInfo: [
-                            {
-                                count: count,
-                                page: parseInt(req.query.page) || 0,
-                                limit: parseInt(req.query.limit) || 10,
-                            },
-                        ],
+                        pageInfo,
                     },
                     400,
                     false
